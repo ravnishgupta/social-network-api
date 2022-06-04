@@ -15,15 +15,9 @@ const thoughtController = {
         try {
           const newThought = await Thought.create(req.body)
           const user = await User.findOneAndUpdate(
-            { 
-              _id: req.body.userId,
-              //thoughts: { $ne: newThought._id },
-            }, 
+            { _id: req.body.userId}, 
             { $push : { thoughts: newThought._id }},
-            { 
-              new: true,
-              unique: true,
-            }
+            { new: true}
           );
           res.json(newThought);
         } catch (err) {
@@ -47,17 +41,17 @@ const thoughtController = {
         .then(dbThought => res.json(dbThought))
         .catch(err => res.status(400).json(err));
     },
-    deleteThought({params}, res) {
-      Thought.findOneAndDelete({_id:params.id})
-      .then(dbThought => {
-        if (!dbThought) {
-          res.status(404).json({message: 'No user found with this id!'});
-          return;
-        }
-        res.json(dbThought)
-      })
-      .catch(err => res.json(err));
-    },
+
+    // deleteThought(thoughtId) {
+    //   Thought.findOneAndDelete({_id:thoughtId})
+    //   .then(dbThought => {
+    //     if (!dbThought) {
+    //       res.status(404).json({message: 'No user found with this id!'});
+    //       return;
+    //     }
+    //   })
+    //   .catch(err => res.json(err));
+    // },
     async createReaction(req, res) {
         try {
           const thoughtToReactTo = await Thought.findOneAndUpdate({ _id: req.params.id}, {$addToSet: {reactions: req.body}}, {new: true});
@@ -66,7 +60,6 @@ const thoughtController = {
               message: 'Thought not found.',
             })
           }
-          //thoughtToReactTo.reactions.push(req.body);
           res.json(thoughtToReactTo);
     
         } catch (err) {
@@ -83,15 +76,15 @@ const thoughtController = {
               message: 'Thought not found.',
             })
           }
-          //console.log(thoughtToRemoveReactionFrom.reactions.id[req.body.reactionId]);
           res.json(thoughtToRemoveReactionFrom);
     
         } catch (err) {
           console.log(err);
           res.status(500).json(err);
         }
-    
-      }
+      },
+
+      
 }
 
 module.exports = thoughtController
