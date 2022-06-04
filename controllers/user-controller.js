@@ -1,3 +1,4 @@
+const { request } = require('express');
 const {User}  = require('../models');
 
 const userController = {
@@ -41,7 +42,22 @@ const userController = {
         res.json(dbUser)
       })
       .catch(err => res.json(err));
+    },
+    async addFriend(req, res) {
+      try {
+        const friend = await User.create(req.body);
+        const user = await User.findOneAndUpdate(
+          {_id : req.params.id},
+          {$push: {friends: friend._id}},
+          {new:true}
+        )
+        res.json(user);
+      }catch (err) {
+        console.log(err);
+        res.status(500).json(err);
+      }
     }
+   
 }
 
 module.exports = userController;

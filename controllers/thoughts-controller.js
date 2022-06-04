@@ -1,4 +1,4 @@
-const {Thought}  = require('../models');
+const {Thought, Reaction}  = require('../models');
 const {User}  = require('../models');
 
 const thoughtController = {
@@ -16,7 +16,7 @@ const thoughtController = {
           const user = await User.findOneAndUpdate(
             { 
               _id: req.body.userId,
-              thoughts: { $ne: newThought._id },
+              //thoughts: { $ne: newThought._id },
             }, 
             { $push : { thoughts: newThought._id }},
             { 
@@ -76,14 +76,14 @@ const thoughtController = {
     
       async deleteReaction(req, res) {
         try {
-          const thoughtToRemoveReactionFrom = await Thought.findOne({ _id: req.params.id});
-          if (!thoughtToReactTo) {
+          const thoughtToRemoveReactionFrom = await Thought.findOneAndUpdate({ _id: req.params.id},{$pull: {reactions: {_id: req.params.reactionId}}},{new: true});
+          if (!thoughtToRemoveReactionFrom) {
             res.status(404).json({
               message: 'Thought not found.',
             })
           }
-          thoughtToRemoveReactionFrom.reactions.id(req.body.reactionId).remove();
-          res.json(thoughtToReactTo);
+          //console.log(thoughtToRemoveReactionFrom.reactions.id[req.body.reactionId]);
+          res.json(thoughtToRemoveReactionFrom);
     
         } catch (err) {
           console.log(err);
