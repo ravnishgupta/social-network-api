@@ -5,9 +5,9 @@ const userController = {
     // get all users
     getAllUsers(req, res) {
       User.find({})
+        .select('-__v')
         .then(dbUsers => res.json(dbUsers))
         .catch(err => {
-          //console.log(err);
           res.status(400).json(err);
         });
     },
@@ -53,6 +53,20 @@ const userController = {
         )
         res.json(user);
       }catch (err) {
+        console.log(err);
+        res.status(500).json(err);
+      }
+    },
+    async deFriend(req, res){
+      try{
+        const user = await User.findOneAndUpdate(
+          {_id : req.params.id},
+          {$pull: {friends: req.params.friendId}},
+          {new:true},
+        )
+        res.json(user);
+      }
+      catch (err) {
         console.log(err);
         res.status(500).json(err);
       }

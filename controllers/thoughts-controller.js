@@ -5,6 +5,7 @@ const thoughtController = {
     // get all thoughts
     getAllThoughts(req, res) {
         Thought.find({})
+        .select('-__v')
         .then(dbThoughts => res.json(dbThoughts))
         .catch(err => {
           res.status(400).json(err);
