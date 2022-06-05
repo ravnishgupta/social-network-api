@@ -32,19 +32,15 @@ const userController = {
       })
       .catch(err => res.json(err));
     },
-    deleteUser({params}, res) {
-      //delete reactions
-      //delete thoughts
-      //delete user
-      User.findOneAndDelete({_id:params.id})
-      .then(dbUser => {
-        if (!dbUser) {
-          res.status(404).json({message: 'No user found with this id!'});
-          return;
-        }
-        res.json(dbUser)
-      })
-      .catch(err => res.json(err));
+    async deleteUser({params}, res) {
+      try{
+        const removeThoughts = await User.findOneAndUpdate({_id:params.id}, {$set : {thoughts:[]}}, {multi:true})
+        const deleteUser = await User.findOneAndDelete({_id:params.id})
+        res.json(deleteUser);
+      } catch (err) {
+        console.log(err);
+        res.status(500).json(err);
+      }
     },
     async addFriend(req, res) {
       try {
@@ -75,24 +71,24 @@ const userController = {
       }
     },
     
-    async removeThought(req, res){
-        try {
+    // async removeThought(req, res){
+    //     try {
           
-          const thought = await Thought.findOneAndDelete({_id : req.params.thoughtId})  
-          
-          const user = await User.findOneAndUpdate(
-            {_id : req.params.id},
-            {$pull : {thoughts : req.params.thoughtId}},
-            {new:true}
-          )
+    //       const thought = await Thought.findOneAndDelete({_id : req.params.thoughtId})  
+
+    //       const user = await User.findOneAndUpdate(
+    //         {_id : req.params.id},
+    //         {$pull : {thoughts : req.params.thoughtId}},
+    //         {new:true}
+    //       )
             
-          res.json(user);
-        }
-        catch (err) {
-          console.log(err);
-          res.status(500).json(err);
-        }
-      }
+    //       res.json(user);
+    //     }
+    //     catch (err) {
+    //       console.log(err);
+    //       res.status(500).json(err);
+    //     }
+    //   }
 }
 
 module.exports = userController;
