@@ -43,13 +43,13 @@ const thoughtController = {
     },
     async deleteThought({params},res) {
       try{
-        //const theThought = await Thought.findOneAndDelete({_id:params.id})
-        const user = await User.find({thoughts: {_id:params.id}})//, {$pull: {thoughts:{_id:params.id}}}, {new:true})
+        const theThought = await Thought.findOneAndDelete({_id:params.id})
+        const user = await User.findOneAndUpdate({thoughts: {_id:params.id}}, {$pull: {thoughts:params.id}}, {new:true})
         //let userId = 
-        const updateUser = await User.findOneAndUpdate({_id:user[0]._id}, {$pull: {thoughts:{_id:params.id}}}, {new:true})
+        //const updateUser = await User.findByIdAndUpdate({_id:user[0]._id}, {$pull: {thoughts:params.id}}, {new:true})
         //user.updateOne({$pull: {thoughts:{_id:params.id}}}, {new:true})
         //console.log(user[0]._id)
-        res.json(updateUser);
+        res.json(user);
       } catch (err) {
         console.log(err);
         res.status(500).json(err);
